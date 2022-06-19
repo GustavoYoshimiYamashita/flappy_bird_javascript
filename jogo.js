@@ -68,11 +68,11 @@ const flappyBird = {
     altura: 24,
     x: 10,
     y: 50,  
-    velocidade: 1,
+    velocidade: 0,
     gravidade: 0.25,
     atualiza(){
         flappyBird.velocidade = flappyBird.velocidade + flappyBird.gravidade
-        flappyBird.y = flappyBird.velocidade;
+        flappyBird.y = flappyBird.y + flappyBird.velocidade;
     },
     desenha(){
         contexto.drawImage(
@@ -85,15 +85,73 @@ const flappyBird = {
     }
 }
 
+const mensagemGetReady = {
+    spriteX: 134,
+    spriteY: 0,
+    largura: 174,
+    altura: 152,
+    x: (canvas.width / 2) - 174 / 2,
+    y: 50,
+    desenha(){
+        contexto.drawImage(
+            sprites,
+            mensagemGetReady.spriteX, mensagemGetReady.spriteY, // Posição X e Y na imagem
+            mensagemGetReady.largura, mensagemGetReady.altura, // Posição X2 e Y2 na imagem
+            mensagemGetReady.x, mensagemGetReady.y, // Aonde começar a imagem no canvas
+            mensagemGetReady.largura, mensagemGetReady.altura, // Tamanho da imagem
+        );
+    },
+};
+
+
+//
+// [Telas]
+//
+let telaAtiva = {};
+function mudaParaTela(novaTela){
+    telaAtiva = novaTela;
+}
+const Telas = {
+    INICIO: {
+        desenha() {
+            planoDeFundo.desenha();
+            chao.desenha();
+            flappyBird.desenha();
+            mensagemGetReady.desenha();
+        },
+        click(){
+            mudaParaTela(Telas.JOGO);
+        },
+        atualiza() {
+
+        }
+    }
+};
+
+Telas.JOGO = {
+    desenha() {
+        planoDeFundo.desenha();
+        chao.desenha();
+        flappyBird.desenha();
+    },
+    atualiza() {
+        flappyBird.atualiza();
+    }
+}
 
 function loop(){
-    planoDeFundo.desenha();
-    chao.desenha();
-    flappyBird.desenha();
 
-    flappyBird.atualiza();
+    telaAtiva.desenha();
+    telaAtiva.atualiza();
 
     requestAnimationFrame(loop);
 }
 
+window.addEventListener('click', function(){
+    if(telaAtiva.click){
+        telaAtiva.click();
+    }
+});
+
+mudaParaTela(Telas.INICIO);
 loop();
